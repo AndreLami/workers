@@ -1,0 +1,83 @@
+version: '3.0'
+services:
+  worker_api:
+    container_name: 'worker_api'
+    build:
+      context: ../../
+      dockerfile: ./apps/api/build/docker/dev/Dockerfile
+    volumes:
+      - ./../../apps/api:/app/apps/api
+      - ./../../apps/shared:/app/apps/shared
+    ports:
+      - '3000:3000'
+    depends_on:
+      - workers_database
+      - redis
+    env_file:
+      - .dev.config.env
+    restart: 'always'
+
+  scheduler_1:
+    container_name: 'scheduler_1'
+    build:
+      context: ../../
+      dockerfile: ./apps/scheduler/build/docker/dev/Dockerfile
+    volumes:
+      - ./../../apps/scheduler:/app/apps/joschedulerb
+      - ./../../apps/shared:/app/apps/shared
+    ports:
+      - '3001:3001'
+    depends_on:
+      - workers_database
+      - redis
+    env_file:
+      - .dev.config.env
+    environment:
+      - WORKER_PORT=3001
+    restart: 'always'
+
+  scheduler_2:
+    container_name: 'scheduler_2'
+    build:
+      context: ../../
+      dockerfile: ./apps/scheduler/build/docker/dev/Dockerfile
+    volumes:
+      - ./../../apps/scheduler:/app/apps/scheduler
+      - ./../../apps/shared:/app/apps/shared
+    ports:
+      - '3002:3002'
+    depends_on:
+      - workers_database
+      - redis
+    env_file:
+      - .dev.config.env
+    environment:
+      - WORKER_PORT=3002
+    restart: 'always'
+
+  workers_database:
+    container_name: 'workers_database'
+    image: 'mariadb:10.5.8'
+    ports:
+      - "3308:3306"
+    volumes:
+      - workers_db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'tasks'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Jerusalem
+    restart: 'always'
+
+  redis:
+    image: redis:7.0.5-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+
+
+volumes:
+  workers_db_data:

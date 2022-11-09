@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/workers/src",
+  "monorepo": true,
+  "root": "apps/workers",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/workers/tsconfig.app.json"
+  },
+  "projects": {
+    "api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "application",
+      "root": "apps/shared",
+      "entryFile": "main",
+      "sourceRoot": "apps/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shared/tsconfig.app.json"
+      }
+    },
+    "scheduler": {
+      "type": "application",
+      "root": "apps/scheduler",
+      "entryFile": "main",
+      "sourceRoot": "apps/scheduler/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/scheduler/tsconfig.app.json"
+      }
+    }
+  }
+}
