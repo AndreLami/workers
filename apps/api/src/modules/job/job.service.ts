@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as Bull from 'bull'
-import { v6 as uuidv6 } from 'uuid';
-import { UnableToCancelJob, UnableToScheduleJob } from '../../../../shared/src/errors/task.errors';
-import { CancelJob, ScheduleJob } from '../../../../shared/src/jobs/commands';
+import { v4 as uuidv4 } from 'uuid';
+import { UnableToCancelJob, UnableToCleanJobs, UnableToScheduleJob } from '../../../../shared/src/errors/task.errors';
+import { CancelJob, CleanJobs, ScheduleJob } from '../../../../shared/src/jobs/commands';
 import { QueueFactoryService } from '../../../../shared/src/services/queue-factory.service';
 
 
@@ -11,12 +11,13 @@ export class JobService {
 
   readonly jobsQueue: Bull.Queue
 
-  constructor(queueFactoryService: QueueFactoryService) {
+  constructor(private readonly queueFactoryService: QueueFactoryService) {
     this.jobsQueue = queueFactoryService.createJobsQueue()
   }
 
   async schedule(): Promise<string> {
-    const jobHandle = JobService.generateJobHandle()
+    const jobHandle = this.generateJobHandle()
+
     try {
       await this.jobsQueue.add(ScheduleJob.commandName, new ScheduleJob(jobHandle))
     } catch (e) {
@@ -28,28 +29,25 @@ export class JobService {
 
   async cancel(jobHandle: string) {
     try {
-      await this.jobsQueue.add(CancelJob.commandName, new CancelJob(jobHandle))
+      const cancelQueue = this.queueFactoryService.getCancelQueue(jobHandle)
+      console.log('Canceling', jobHandle)
+      await cancelQueue.add(new CancelJob(jobHandle))
+      console.log('Done cancel')
     } catch (e) {
       throw new UnableToCancelJob(jobHandle)
     }
   }
 
-  // async clean() {
-  //   const jobs = await this.queue.getRepeatableJobs()
-  //   for (let i = 0; i < jobs.length; i++) {
-  //     const job = jobs[i];
-  //     await this.queue.removeRepeatable(job.name, {
-  //       every: job.every,
-  //       jobId: job.id
-  //     });
-  //
-  //     console.log('Removed', job.name, job.id, job.every)
-  //   }
-  //
-  // }
+  async clean() {
+    try {
+      await this.jobsQueue.add(CleanJobs.commandName, new CleanJobs())
+    } catch (e) {
+      throw new UnableToCleanJobs()
+    }
+  }
 
-  private static generateJobHandle(): string {
-    return uuidv6();
+  private generateJobHandle(): string {
+    return uuidv4();
   }
 
 }

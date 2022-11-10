@@ -23,7 +23,7 @@ services:
       context: ../../
       dockerfile: ./apps/scheduler/build/docker/dev/Dockerfile
     volumes:
-      - ./../../apps/scheduler:/app/apps/joschedulerb
+      - ./../../apps/scheduler:/app/apps/scheduler
       - ./../../apps/shared:/app/apps/shared
     ports:
       - '3001:3001'

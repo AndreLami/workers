@@ -53,3 +53,13 @@ export class UnableToCancelJob extends TaskError implements HttpErrorRepresentab
     httpStatus: number = HttpStatus.INTERNAL_SERVER_ERROR
 
 }
+
+export class UnableToCleanJobs extends TaskError implements HttpErrorRepresentable {
+
+    constructor() {
+        super(100_0003, "Unable to clean jobs");
+    }
+
+    httpStatus: number = HttpStatus.INTERNAL_SERVER_ERROR
+
+}

@@ -37,8 +37,22 @@ export class CancelJob extends JobCommand {
     this.jobHandle = jobHandle
   }
 
-  static fromPayload(payload: any): ScheduleJob {
+  static fromPayload(payload: any): CancelJob {
     return new CancelJob(payload.jobHandle)
+  }
+
+}
+
+export class CleanJobs extends JobCommand {
+
+  static commandName = "job.clean"
+
+  constructor() {
+    super();
+  }
+
+  static fromPayload(payload: any): CleanJobs {
+    return new CleanJobs()
   }
 
 }

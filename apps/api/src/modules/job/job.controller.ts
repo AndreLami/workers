@@ -19,9 +19,8 @@ export class JobController {
   }
 
   @Get('clean')
-  clean(): string {
-    // this.workerApiService.clean()
-    return 'ok'
+  async clean(): Promise<void> {
+    return await this.workerApiService.clean()
   }
 
 

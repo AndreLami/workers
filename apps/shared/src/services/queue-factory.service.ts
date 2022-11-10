@@ -22,7 +22,7 @@ export class QueueFactoryService {
     this.redisPort = redisPort
   }
 
-  createQueue(name): Bull.Queue {
+  createQueue(name: string): Bull.Queue {
     return new Bull(name, {
       redis: { host: this.redisHost, port: this.redisPort }
     })
@@ -32,8 +32,12 @@ export class QueueFactoryService {
     return this.createQueue('jobs')
   }
 
-  createExecutionQueue(name): Bull.Queue {
+  createExecutionQueue(name: string): Bull.Queue {
     return this.createQueue(`execution.${name}`)
+  }
+
+  getCancelQueue(name: string): Bull.Queue {
+    return this.createQueue(`cancel.${name}`)
   }
 
 }
