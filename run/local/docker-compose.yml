@@ -11,7 +11,7 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - workers_database
+      - jobs_database
       - redis
     env_file:
       - .dev.config.env
@@ -28,7 +28,8 @@ services:
     ports:
       - '3001:3001'
     depends_on:
-      - workers_database
+      - worker_api
+      - jobs_database
       - redis
     env_file:
       - .dev.config.env
@@ -47,7 +48,8 @@ services:
     ports:
       - '3002:3002'
     depends_on:
-      - workers_database
+      - worker_api
+      - jobs_database
       - redis
     env_file:
       - .dev.config.env
@@ -55,20 +57,19 @@ services:
       - WORKER_PORT=3002
     restart: 'always'
 
-  workers_database:
-    container_name: 'workers_database'
+  jobs_database:
+    container_name: 'jobs_database'
     image: 'mariadb:10.5.8'
     ports:
       - "3308:3306"
     volumes:
       - workers_db_data:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: 'tasks'
+      MYSQL_DATABASE: 'jobs'
       MYSQL_USER: 'admin'
       MYSQL_PASSWORD: 'root'
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_ROOT_HOST: '%'
-      TZ: Asia/Jerusalem
     restart: 'always'
 
   redis:

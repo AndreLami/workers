@@ -26,6 +26,34 @@ export class ScheduleJob extends JobCommand {
 
 }
 
+export class MonitorJob extends JobCommand {
+
+  static commandName = "job.monitor"
+  readonly schedulerId: string
+
+  constructor(schedulerId: string) {
+    super();
+
+    this.schedulerId = schedulerId
+  }
+
+  static fromPayload(payload: any): MonitorJob {
+    return new MonitorJob(payload.schedulerId)
+  }
+
+}
+
+
+export class LiveProbeJob extends JobCommand {
+
+  static commandName = "job.live_probe"
+
+  static fromPayload(payload: any): LiveProbeJob {
+    return new LiveProbeJob()
+  }
+
+}
+
 export class CancelJob extends JobCommand {
 
   static commandName = "job.cancel"

@@ -6,7 +6,7 @@ import * as Bull from 'bull'
 export class QueueFactoryService {
 
   private readonly redisHost: string
-  private readonly redisPort: string
+  private readonly redisPort: number
 
   constructor(configService: ConfigService) {
     const redisHost = configService.get('REDIS_HOST')
@@ -23,21 +23,22 @@ export class QueueFactoryService {
   }
 
   createQueue(name: string): Bull.Queue {
-    return new Bull(name, {
+    let queueOptions: Bull.QueueOptions = {
       redis: { host: this.redisHost, port: this.redisPort }
-    })
+    };
+    return new Bull(name, queueOptions)
   }
 
   createJobsQueue(): Bull.Queue {
     return this.createQueue('jobs')
   }
 
-  createExecutionQueue(name: string): Bull.Queue {
-    return this.createQueue(`execution.${name}`)
+  getJobQueue(name: string): Bull.Queue {
+    return this.createQueue(`job.${name}`)
   }
 
-  getCancelQueue(name: string): Bull.Queue {
-    return this.createQueue(`cancel.${name}`)
+  getSchedulerQueue(name: string): Bull.Queue {
+    return this.createQueue(`scheduler.${name}`)
   }
 
 }
