@@ -60,6 +60,8 @@ export class SchedulerService {
 
     schedule.stop()
     this.schedulesMap.delete(command.jobHandle)
+    const jobQueue = this.queueFactoryService.getJobQueue(command.jobHandle)
+    jobQueue.obliterate().catch(() => {})
   }
 
 }
